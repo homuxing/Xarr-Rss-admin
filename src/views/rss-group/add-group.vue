@@ -10,7 +10,13 @@
           ></el-input>
         </el-form-item>
         <!-- 数据源 -->
-        <el-form-item label="数据源">
+        <el-form-item
+          label="数据源"
+          prop="remote"
+          :rules="[
+            {required: true, message: '请输入数据源链接', trigger: 'blur'}
+          ]"
+        >
           <el-select
             v-model="group.remote"
             class="long-select"
@@ -28,7 +34,11 @@
         <el-form-item
           v-for="(regex, regexIndex) in group.regex"
           :key="regexIndex"
+          :prop="'regex.' + regexIndex + '.reg'"
           :label="'匹配规则' + (regexIndex + 1)"
+          :rules="[
+            {required: true, message: '请输入匹配规则', trigger: 'blur'}
+          ]"
         >
           <div class="pattern-input-box">
             <!-- 匹配正则 -->
@@ -40,8 +50,14 @@
             </div>
             <div class="pattern-options">
               <!-- 季度编号 -->
-              <div class="season">
-                <span class="pattern-label">季度编号</span>
+              <el-form-item
+                label="季度编号"
+                :prop="'regex.' + regexIndex + '.season'"
+                class="season"
+                :rules="[
+                  {required: true, message: '请选择季度', trigger: 'blur'}
+                ]"
+              >
                 <el-select
                   v-model="regex.season"
                   placeholder="季度编号"
@@ -54,17 +70,16 @@
                     :value="seasonOption.value"
                   ></el-option>
                 </el-select>
-              </div>
+              </el-form-item>
               <!-- 剧集偏移量 -->
-              <div class="offset">
-                <span class="pattern-label">剧集偏移量</span>
+              <el-form-item label="剧集偏移量" prop="offset" class="offset">
                 <el-input
                   v-model="regex.offset"
                   placeholder="剧集偏移量"
                   type="number"
                   size="small"
                 ></el-input>
-              </div>
+              </el-form-item>
             </div>
             <div class="pattern-input-btns">
               <el-button type="text">ESCAPE</el-button>
@@ -89,7 +104,13 @@
           >添加新规则</el-button>
         </el-form-item>
         <!-- 剧集名称 -->
-        <el-form-item label="剧集名称">
+        <el-form-item
+          label="剧集名称"
+          prop="series"
+          :rules="[
+            {required: true, message: '请输入剧集名称', trigger: 'blur'}
+          ]"
+        >
           <el-select
             v-model="group.series"
             class="long-select"
@@ -224,7 +245,14 @@ export default {
       })
     },
     bindSaveGroup() {
-      console.log(this.group)
+      this.$refs['group'].validate((valid) => {
+        if (valid) {
+          console.log(this.group, 'submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
     handleAnimeName(anime) {
       const name = escapeRegExp(anime.name)
